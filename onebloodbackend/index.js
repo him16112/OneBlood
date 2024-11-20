@@ -5,7 +5,6 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const app = express();
-const port = 8000;
 const User = require("./database/userModel");
 const nodemailer = require("nodemailer");
 const path = require('path');
@@ -18,6 +17,7 @@ require("dotenv").config(); // This loads the environment variables from .env fi
 // Use environment variables for secret key and API key
 const secretKey = process.env.SECRET_KEY;
 const apiKey = process.env.API_KEY;
+const port = process.env.PORT || 8000;
 
 // Use environment variables for email and app password
 const companyEmail = process.env.COMPANY_EMAIL;
