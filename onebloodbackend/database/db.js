@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
+const dbUri = process.env.DB_URI;
 
-mongoose.connect('mongodb://127.0.0.1:27017/auth-demo', {
+mongoose.connect(dbUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   family: 4,
