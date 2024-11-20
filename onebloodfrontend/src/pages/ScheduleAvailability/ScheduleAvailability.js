@@ -8,6 +8,8 @@ const ScheduleAvailability = () => {
         date: '',
     });
 
+    const [message, setMessage] = useState(null); // State to store the success/error message
+
     const initialFormData = {
         date: '',
     };
@@ -33,16 +35,15 @@ const ScheduleAvailability = () => {
             });
 
             if (response.ok) {
+                const data = await response.json();
+                setMessage(data.message); // Set the success message
                 console.log('Availability schedule created successfully');
-                const usersResponse = await fetch('http://localhost:8000/getUsers');
-                const usersData = await usersResponse.json();
-                console.log('Users array after registration:', usersData);
-                // Optionally, you can redirect the user or show a success message
             } else {
+                setMessage("Error creating availability schedule"); // Set error message if the request fails
                 console.error('Error creating availability schedule');
-                // Handle error and show an error message
             }
         } catch (error) {
+            setMessage("POST request error. Please try again later."); // Set error message for fetch failure
             console.error('POST request error:', error);
         }
 
@@ -66,6 +67,15 @@ const ScheduleAvailability = () => {
                 </div>
                 <button type="submit">Submit</button>
             </form>
+
+            {/* Show message based on state */}
+            {message && (
+                <div className="message-container">
+                    <div className={message.includes("Error") ? "error-message" : "success-message"}>
+                        <p>{message}</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

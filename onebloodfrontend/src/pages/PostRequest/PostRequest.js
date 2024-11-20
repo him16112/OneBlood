@@ -3,6 +3,7 @@ import './PostRequest.css';
 import { useNavigate } from 'react-router-dom';
 
 const PostRequest = () => {
+    const [message, setMessage] =useState(null);
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         date: '',
@@ -33,16 +34,15 @@ const PostRequest = () => {
             });
 
             if (response.ok) {
-                console.log('Availability schedule created successfully');
-                const usersResponse = await fetch('http://localhost:8000/getUsers');
-                const usersData = await usersResponse.json();
-                console.log('Users array after registration:', usersData);
-                // Optionally, you can redirect the user or show a success message
+                const data = await response.json();
+                setMessage(data.message);
             } else {
-                console.error('Error creating availability schedule');
+                setMessage("Error creating Post Request");
+                console.error('Error creating Post Request');
                 // Handle error and show an error message
             }
         } catch (error) {
+            setMessage("POST request error. Please try again later."); 
             console.error('POST request error:', error);
         }
 
@@ -66,6 +66,13 @@ const PostRequest = () => {
                 </div>
                 <button type="submit">Submit</button>
             </form>
+            {message && (
+                <div className="message-container">
+                    <div className={message.includes("Error") ? "error-message" : "success-message"}>
+                        <p>{message}</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

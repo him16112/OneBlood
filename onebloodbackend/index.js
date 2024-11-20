@@ -5,19 +5,16 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const app = express();
-const port = 8000;
 const User = require("./database/userModel");
 const nodemailer = require("nodemailer");
-const path = require('path');
+const path = require("path");
 
 require("dotenv").config(); // This loads the environment variables from .env file
-
-
-
 
 // Use environment variables for secret key and API key
 const secretKey = process.env.SECRET_KEY;
 const apiKey = process.env.API_KEY;
+const port = process.env.PORT || 8000;
 
 // Use environment variables for email and app password
 const companyEmail = process.env.COMPANY_EMAIL;
@@ -193,6 +190,8 @@ app.get("/usersRequests", verifyToken, async (req, res) => {
 
 // Create a new POST route for scheduling availability
 app.post("/scheduleAvailability", verifyToken, async (req, res) => {
+  const user = await User.findById(req.user.id);
+  const userEmail = user.email;
   try {
     // Get the user data from the token (you can access it as req.user)
     const { date } = req.body;
@@ -207,7 +206,49 @@ app.post("/scheduleAvailability", verifyToken, async (req, res) => {
     user.availability.push(schedule);
     await user.save();
 
-    res.json({ message: "Availability schedule created successfully" });
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // true for port 465, false for other ports
+      auth: {
+        user: companyEmail, // Use the COMPANY_EMAIL from the .env file
+        pass: gmailAppPassword,
+      },
+    });
+
+    let mailOptions = {
+      from: {
+        name: "One Blood",
+        address: "shauntait341@gmail.com",
+      },
+      to: userEmail,
+      subject: "Urgent: Blood Donation Request",
+      text: `Dear Donor,
+
+      Your availability for blood donation has been successfully scheduled for ${new Date(
+        date
+      ).toLocaleDateString()}.
+      
+      Thank you for your willingness to help others in need. Your contribution can save lives!
+      
+      Regards,  
+      One Blood Team`,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (emailError) {
+      console.error("Error sending email: ", emailError);
+      return res.status(500).json({
+        message:
+          "Availability scheduled, but failed to send email notification.",
+      });
+    }
+
+    res.json({
+      message:
+        "Availability scheduled  and email notification send successfully",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -233,12 +274,10 @@ app.post("/postRequest", verifyToken, async (req, res) => {
     user.requests.push(schedule);
     await user.save();
 
-    
     const usersWithMatchingRequests = await User.find({
       bloodGroup: userBloodGroup,
       _id: { $ne: userId }, // Exclude requests by the current user
     });
-
 
     const usersEmail = usersWithMatchingRequests.map((user) => user.email);
 
@@ -247,36 +286,44 @@ app.post("/postRequest", verifyToken, async (req, res) => {
       port: 587,
       secure: false, // true for port 465, false for other ports
       auth: {
-        user: companyEmail,  // Use the COMPANY_EMAIL from the .env file
-        pass: gmailAppPassword 
+        user: companyEmail, // Use the COMPANY_EMAIL from the .env file
+        pass: gmailAppPassword,
       },
     });
-  
+
     let mailOptions = {
       from: {
-        name: 'One Blood',
+        name: "One Blood",
         address: "shauntait341@gmail.com",
       },
       to: usersEmail,
       subject: "Urgent: Blood Donation Request",
       text: `Dear Donor,
       
-      A blood donation request for group ${userBloodGroup} has been posted on ${new Date(date).toLocaleDateString()}.
+      A blood donation request for group ${userBloodGroup} has been posted on ${new Date(
+        date
+      ).toLocaleDateString()}.
       
       Please help if you can. 
       
-      Regards, One Blood Team`
+      Regards, One Blood Team`,
     };
-  
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log('Error: ', error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
-    });
 
- 
+    try {
+      const emailResponse = await transporter.sendMail(mailOptions);
+      console.log("Email sent: " + emailResponse.response);
+      res.status(200).json({
+        message:
+          "Request created successfully, and email notifications sent to matching donors.",
+      });
+    } catch (emailError) {
+      console.error("Error sending email: ", emailError.message);
+      return res.status(500).json({
+        message:
+          "Request created successfully, but failed to send email notifications. Please try again later.",
+      });
+    }
+
     res.json({ message: "Post Request created successfully" });
   } catch (error) {
     console.error("Error:", error.message);
@@ -330,7 +377,6 @@ app.post("/register", async (req, res) => {
     }
   }
 });
-
 
 // Login route
 app.post("/login", async (req, res) => {
@@ -426,8 +472,6 @@ function verifyToken(req, res, next) {
     });
   }
 }
-
-
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

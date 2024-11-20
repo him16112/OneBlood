@@ -44,3 +44,38 @@
 .schedule-availability-container button:hover {
     background-color: #0056b3;
 }
+
+/* Center the message and apply styling */
+.success-message, .error-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    text-align: center;
+    font-family: 'Arial', sans-serif; /* Font style */
+    font-size: 1.2rem; /* Font size */
+    font-weight: bold;
+    color: white;
+    background-color: #4CAF50; /* Green for success */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.error-message {
+    background-color: #f44336; /* Red for error */
+}
+
+.message-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    width: 80%;
+    max-width: 500px;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+}
