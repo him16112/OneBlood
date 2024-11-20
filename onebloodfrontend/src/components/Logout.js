@@ -8,7 +8,7 @@ const Logout = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:8000/logout', {
+      const response = await fetch('https://one-blood.onrender.com/logout', {
         method: 'POST',
         credentials: 'include', // Include credentials (cookies)
       });

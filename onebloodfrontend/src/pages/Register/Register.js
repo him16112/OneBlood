@@ -36,7 +36,7 @@ const Register = () => {
         e.preventDefault();
     
         try {
-            const response = await fetch('http://localhost:8000/register', {
+            const response = await fetch('https://one-blood.onrender.com', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -46,13 +46,6 @@ const Register = () => {
     
             if (response.ok) {
                 alert('Registration successful!'); // Display a success message to the user
-    
-                // Fetch the updated user list (if needed)
-                const usersResponse = await fetch('http://localhost:8000/getUsers');
-                const usersData = await usersResponse.json();
-                console.log('Users array after registration:', usersData);
-    
-                // Navigate to the login page
                 navigate('/');
             } else {
                 const errorData = await response.json();

@@ -25,7 +25,7 @@ const ScheduleAvailability = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:8000/scheduleAvailability', {
+            const response = await fetch('https://one-blood.onrender.com/scheduleAvailability', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

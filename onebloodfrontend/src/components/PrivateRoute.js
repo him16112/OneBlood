@@ -8,7 +8,7 @@ const PrivateRoute = (props) => {
 
     const authenticateUser = async () => {
         try {
-            const response = await fetch('http://localhost:8000/protected', {
+            const response = await fetch('https://one-blood.onrender.com/protected', {
                 method: 'GET',
                 credentials: 'include', // Include credentials (cookies)
             });
