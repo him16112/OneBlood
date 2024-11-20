@@ -1,0 +1,22 @@
+# Node modules
+onebloodfrontend/node_modules/
+onebloodbackend/node_modules/
+
+# Environment variables
+onebloodfrontend/.env
+onebloodbackend/.env
+
+# Logs
+*.log
+
+# OS-generated files
+.DS_Store
+
+# NPM package lock files (if you want to ignore them, otherwise you can remove these lines)
+onebloodfrontend/package-lock.json
+onebloodbackend/package-lock.json
+
+# Other common files to ignore
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

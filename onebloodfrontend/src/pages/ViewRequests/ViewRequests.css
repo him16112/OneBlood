@@ -1,0 +1,119 @@
+/* ViewRequests.css */
+body {
+    background: linear-gradient(to bottom, #f8bbd0, #ffcdd2) fixed;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+}
+
+.view-requests-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.view-requests-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
+    transition: transform 0.3s;
+}
+
+.view-requests-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+.view-requests-header {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #c62828; /* Deep red */
+    margin-bottom: 25px;
+    text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.15);
+}
+
+.view-requests-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.view-requests-user {
+    background: #ffeef0;
+    border: 2px solid #ffbaba;
+    border-radius: 15px;
+    margin: 20px 0;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.view-requests-user:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.view-requests-username {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #b71c1c; /* Darker red */
+    margin-bottom: 10px;
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.view-requests-address {
+    font-size: 1.2rem;
+    color: #616161;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+.view-requests-request-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.view-requests-request {
+    font-size: 1rem;
+    margin: 15px 0;
+    border-top: 1px solid #ffcccb;
+    padding-top: 10px;
+    text-align: left;
+}
+
+.view-requests-request-date {
+    font-weight: bold;
+    color: #d32f2f; /* Highlighted red */
+}
+
+.view-requests-request span {
+    display: block;
+    margin-top: 5px;
+    color: #757575;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .view-requests-card {
+        padding: 20px;
+    }
+
+    .view-requests-header {
+        font-size: 2rem;
+    }
+
+    .view-requests-username {
+        font-size: 1.5rem;
+    }
+
+    .view-requests-address {
+        font-size: 1rem;
+    }
+}
