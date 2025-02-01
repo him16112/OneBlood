@@ -33,13 +33,15 @@ const Register = () => {
 
 
     const handleRegister = async (e) => {
+        console.log(process.env.REACT_APP_BACKEND_URL)
         e.preventDefault();
     
         try {
-            const response = await fetch('https://one-blood.onrender.com/register', {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    
                 },
                 body: JSON.stringify(formData),
             });

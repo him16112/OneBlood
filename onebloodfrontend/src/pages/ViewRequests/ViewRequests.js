@@ -7,7 +7,7 @@ const ViewRequests = () => {
   useEffect(() => {
     // Fetch users with matching requests based on the user's blood group
 
-    fetch('https://one-blood.onrender.com/usersRequests', {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/usersRequests`, {
       method: 'GET',
       credentials: 'include',
     })

@@ -3,51 +3,42 @@ import './PostRequest.css';
 import { useNavigate } from 'react-router-dom';
 
 const PostRequest = () => {
-    const [message, setMessage] =useState(null);
+    const [loading, setLoading] = useState(false); // Loader state
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        date: '',
-    });
-
-    const initialFormData = {
-        date: '',
-    };
+    const [formData, setFormData] = useState({ date: '' });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true); // Show loader while sending request
+
         try {
-            const response = await fetch('https://one-blood.onrender.com/postRequest', {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/postRequest`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
-                credentials: 'include', // Include credentials (cookies)
+                credentials: 'include', 
             });
 
+            const data = await response.json();
+            window.alert(data.message); // Show alert when response is received
+            
             if (response.ok) {
-                const data = await response.json();
-                setMessage(data.message);
-            } else {
-                setMessage("Error creating Post Request");
-                console.error('Error creating Post Request');
-                // Handle error and show an error message
+                setTimeout(() => {
+                    navigate('/home'); // Navigate only after request is successful
+                }, 1500); // Short delay before navigating
             }
         } catch (error) {
-            setMessage("POST request error. Please try again later."); 
+            window.alert("POST request error. Please try again later.");
             console.error('POST request error:', error);
         }
 
-        setFormData(initialFormData);
-        navigate('/home');
+        setLoading(false); // Hide loader after request completes
+        setFormData({ date: '' });
     };
 
     return (
@@ -62,17 +53,14 @@ const PostRequest = () => {
                         value={formData.date}
                         onChange={handleChange}
                         required
+                        disabled={loading} // Disable input when loading
                     />
                 </div>
-                <button type="submit">Submit</button>
+                <button type="submit" disabled={loading}>
+                    {loading ? "Submitting..." : "Submit"} {/* Button changes when loading */}
+                </button>
             </form>
-            {message && (
-                <div className="message-container">
-                    <div className={message.includes("Error") ? "error-message" : "success-message"}>
-                        <p>{message}</p>
-                    </div>
-                </div>
-            )}
+            {loading && <div className="loader"></div>} {/* Loader displayed when loading */}
         </div>
     );
 };

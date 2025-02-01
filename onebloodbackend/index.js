@@ -7,18 +7,21 @@ const cookieParser = require("cookie-parser");
 const app = express();
 const User = require("./database/userModel");
 const nodemailer = require("nodemailer");
-const path = require("path");
 
 require("dotenv").config(); // This loads the environment variables from .env file
+
+
 
 // Use environment variables for secret key and API key
 const secretKey = process.env.SECRET_KEY;
 const apiKey = process.env.API_KEY;
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8080;
 
 // Use environment variables for email and app password
 const companyEmail = process.env.COMPANY_EMAIL;
 const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
+
+
 
 app.use(
   cors({
@@ -256,7 +259,6 @@ app.post("/scheduleAvailability", verifyToken, async (req, res) => {
 });
 
 // POST A REQUEST
-
 app.post("/postRequest", verifyToken, async (req, res) => {
   const userBloodGroup = req.cookies.bloodGroup;
   const userId = req.user.id;
@@ -265,9 +267,7 @@ app.post("/postRequest", verifyToken, async (req, res) => {
     const { date } = req.body;
 
     // Create a new schedule document and save it to the database using the User model
-    const schedule = {
-      date,
-    };
+    const schedule = { date };
 
     // Save the schedule to the user's document
     const user = await User.findById(req.user.id);
@@ -286,16 +286,13 @@ app.post("/postRequest", verifyToken, async (req, res) => {
       port: 587,
       secure: false, // true for port 465, false for other ports
       auth: {
-        user: companyEmail, // Use the COMPANY_EMAIL from the .env file
+        user: companyEmail,
         pass: gmailAppPassword,
       },
     });
 
     let mailOptions = {
-      from: {
-        name: "One Blood",
-        address: "shauntait341@gmail.com",
-      },
+      from: { name: "One Blood", address: "shauntait341@gmail.com" },
       to: usersEmail,
       subject: "Urgent: Blood Donation Request",
       text: `Dear Donor,
@@ -310,9 +307,27 @@ app.post("/postRequest", verifyToken, async (req, res) => {
     };
 
     try {
-      const emailResponse = await transporter.sendMail(mailOptions);
-      console.log("Email sent: " + emailResponse.response);
-      res.status(200).json({
+      await transporter.sendMail(mailOptions);
+
+      // Send confirmation email to the user who posted the request
+      let confirmationMailOptions = {
+        from: { name: "One Blood", address: user.email },
+        to: user.email, // Sending confirmation to the request creator
+        subject: "Your Blood Donation Request Has Been Posted Successfully",
+        text: `Dear ${user.name},
+        
+        Your blood donation request for group ${userBloodGroup} has been successfully posted on ${new Date(
+          date
+        ).toLocaleDateString()}.
+
+        You will be notified when a donor is available. Thank you for using One Blood.
+        
+        Regards, One Blood Team`,
+      };
+
+      await transporter.sendMail(confirmationMailOptions);
+
+      return res.status(200).json({
         message:
           "Request created successfully, and email notifications sent to matching donors.",
       });
@@ -323,13 +338,12 @@ app.post("/postRequest", verifyToken, async (req, res) => {
           "Request created successfully, but failed to send email notifications. Please try again later.",
       });
     }
-
-    res.json({ message: "Post Request created successfully" });
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 // Get all users route
 app.get("/getUsers", async (req, res) => {
@@ -413,9 +427,10 @@ app.post("/login", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
+      sameSite: 'none',
       maxAge: 900000,
-    });
+   });
 
     res.cookie("username", user.username, {
       httpOnly: false, // This cookie will be accessible via JavaScript
@@ -425,13 +440,15 @@ app.post("/login", async (req, res) => {
 
     res.cookie("bloodGroup", userBloodGroup, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
+      sameSite: 'none',
       maxAge: 900000,
     });
 
     res.cookie("address", userAddress, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
+      sameSite: 'none',
       maxAge: 900000,
     });
 
@@ -472,6 +489,10 @@ function verifyToken(req, res, next) {
     });
   }
 }
+
+
+
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
