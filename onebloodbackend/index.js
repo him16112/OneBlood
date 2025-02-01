@@ -25,7 +25,7 @@ const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
     methods: "POST, GET, OPTIONS",
     allowedHeaders: ["Content-Type"],
     credentials: true, // Allow credentials
